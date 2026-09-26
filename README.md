@@ -57,32 +57,32 @@
 
 ```text
 Odoo-x-LPU-Jalandhar-Hackathon-2026/
-├── README.md               # Root project documentation (this file)
-└── stocksense/             # Main application source directory
-    ├── prisma/             # Prisma schema and SQLite database
-    │   ├── dev.db          # Development database
-    │   └── schema.prisma   # Data models (User, Product, Move, MoveLine, Warehouse, Location, StockQuant)
-    ├── public/             # Static public assets
-    ├── src/
-    │   ├── app/            # Next.js App Router
-    │   │   ├── (dashboard)/# Authenticated dashboard views
+├── README.md                      # Root project documentation (this file)
+└── stocksense/                    # Main application source directory
+    ├── prisma/                    # Prisma schema and SQLite database
+    │   ├── dev.db                 # Development database
+    │   └── schema.prisma          # Data models (User, Product, Move, MoveLine, Warehouse, Location, StockQuant)
+    ├── public/                    # Static public assets
+    ├── src/                       # src directory
+    │   ├── app/                   # Next.js App Router
+    │   │   ├── (dashboard)/       # Authenticated dashboard views
     │   │   │   ├── history/       # Stock move audit logs
     │   │   │   ├── operations/    # Receipts, Deliveries & Adjustments
     │   │   │   ├── profile/       # User profile management
     │   │   │   ├── settings/      # Warehouse & Location settings
     │   │   │   └── stock/         # Product catalog and stock levels
-    │   │   ├── api/        # NextAuth and backend API endpoints
-    │   │   ├── login/      # Sign-in page
-    │   │   ├── signup/     # Registration page
-    │   │   └── reset-password/ # Password reset page
-    │   ├── components/     # UI components (Sidebar, TopNavbar, etc.)
-    │   ├── lib/            # Shared utilities (auth, Prisma client)
-    │   └── middleware.ts   # Route protection middleware
-    ├── .env                # Environment variables
-    ├── next.config.mjs     # Next.js configuration
-    ├── package.json        # Dependencies and scripts
-    ├── tailwind.config.ts  # Tailwind CSS configuration
-    └── tsconfig.json       # TypeScript configuration
+    │   │   ├── api/               # NextAuth and backend API endpoints
+    │   │   ├── login/             # Sign-in page
+    │   │   ├── signup/            # Registration page
+    │   │   └── reset-password/    # Password reset page
+    │   ├── components/            # UI components (Sidebar, TopNavbar, etc.)
+    │   ├── lib/                   # Shared utilities (auth, Prisma client)
+    │   └── middleware.ts          # Route protection middleware
+    ├── .env                       # Environment variables
+    ├── next.config.mjs            # Next.js configuration
+    ├── package.json               # Dependencies and scripts
+    ├── tailwind.config.ts         # Tailwind CSS configuration
+    └── tsconfig.json              # TypeScript configuration
 ```
 
 ---
