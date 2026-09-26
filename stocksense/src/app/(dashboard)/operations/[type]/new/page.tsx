@@ -6,12 +6,13 @@ import { notFound } from "next/navigation";
 
 export default async function NewOperationPage({ params }: { params: { type: string } }) {
   const opType = params.type.toUpperCase();
-  if (!["RECEIPTS", "DELIVERIES", "ADJUSTMENTS"].includes(opType)) notFound();
+  if (!["RECEIPTS", "DELIVERIES", "ADJUSTMENTS", "INTERNAL"].includes(opType)) notFound();
 
   const titleMap: Record<string, string> = {
     "RECEIPTS": "New Receipt",
     "DELIVERIES": "New Delivery",
     "ADJUSTMENTS": "New Stock Adjustment",
+    "INTERNAL": "New Internal Transfer",
   };
 
   const locations = await prisma.location.findMany({ include: { warehouse: true } });
@@ -43,15 +44,27 @@ export default async function NewOperationPage({ params }: { params: { type: str
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {opType === "DELIVERIES" ? "Source Location" : "Destination Location"}
-            </label>
-            <select name="locationId" required className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:outline-none bg-white">
-              <option value="">Select Location...</option>
-              {locations.map(l => <option key={l.id} value={l.id}>{l.name} ({l.warehouse.name})</option>)}
-            </select>
-            <p className="text-xs text-slate-500 mt-1">Required to generate the auto-increment Reference ID.</p>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                {opType === "DELIVERIES" || opType === "INTERNAL" ? "Source Location" : "Destination Location (For ID)"}
+              </label>
+              <select name="locationId" required className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:outline-none bg-white">
+                <option value="">Select Location...</option>
+                {locations.map(l => <option key={l.id} value={l.id}>{l.name} ({l.warehouse.name})</option>)}
+              </select>
+              <p className="text-xs text-slate-500 mt-1">Required to generate the auto-increment Reference ID.</p>
+            </div>
+
+            {opType === "INTERNAL" && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Destination Location</label>
+                <select name="destLocationId" required className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:outline-none bg-white">
+                  <option value="">Select Target...</option>
+                  {locations.map(l => <option key={l.id} value={l.id}>{l.name} ({l.warehouse.name})</option>)}
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="pt-4 border-t border-slate-100 flex justify-end">

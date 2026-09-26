@@ -10,17 +10,16 @@ export async function createOperation(formData: FormData) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) throw new Error("Not authenticated");
   
-  // Actually, we use loginId in our updated NextAuth, so email might be the loginId depending on token, but let's just query by email or loginId.
-  // We added loginId to the session object.
   const user = await prisma.user.findFirst({ where: { loginId: (session.user as any).loginId } });
 
-  const type = formData.get("type") as string; // RECEIPTS, DELIVERIES, ADJUSTMENTS
-  const dbTypeMap: Record<string, string> = { "RECEIPTS": "RECEIPT", "DELIVERIES": "DELIVERY", "ADJUSTMENTS": "ADJUSTMENT" };
+  const type = formData.get("type") as string;
+  const dbTypeMap: Record<string, string> = { "RECEIPTS": "RECEIPT", "DELIVERIES": "DELIVERY", "ADJUSTMENTS": "ADJUSTMENT", "INTERNAL": "INTERNAL" };
   const dbType = dbTypeMap[type.toUpperCase()];
 
   const contact = formData.get("contact") as string;
   const scheduleDateStr = formData.get("scheduleDate") as string;
-  const locationId = formData.get("locationId") as string; // The primary warehouse location
+  const locationId = formData.get("locationId") as string;
+  const destLocationId = formData.get("destLocationId") as string;
   
   if (!locationId) throw new Error("Location is required to generate reference");
 
@@ -32,10 +31,8 @@ export async function createOperation(formData: FormData) {
   if (!location) throw new Error("Invalid location");
 
   const warehouseCode = location.warehouse.shortCode;
-  const operationCode = dbType === "RECEIPT" ? "IN" : dbType === "DELIVERY" ? "OUT" : "ADJ";
+  const operationCode = dbType === "RECEIPT" ? "IN" : dbType === "DELIVERY" ? "OUT" : dbType === "INTERNAL" ? "INT" : "ADJ";
 
-  // Generate Reference: <Warehouse>/<Operation>/<ID>
-  // Count how many we have for this type and warehouse to increment
   const count = await prisma.move.count({
     where: { 
       type: dbType, 
@@ -52,12 +49,12 @@ export async function createOperation(formData: FormData) {
     data: {
       reference,
       type: dbType,
-      status: "DRAFT", // Always draft initially
+      status: "DRAFT",
       contact,
       scheduleDate,
       responsibleId: user?.id,
-      destLocationId: dbType === "RECEIPT" || dbType === "ADJUSTMENT" ? locationId : null,
-      sourceLocationId: dbType === "DELIVERY" ? locationId : null,
+      destLocationId: dbType === "RECEIPT" || dbType === "ADJUSTMENT" ? locationId : dbType === "INTERNAL" ? destLocationId : null,
+      sourceLocationId: dbType === "DELIVERY" || dbType === "INTERNAL" ? locationId : null,
     }
   });
 
@@ -137,3 +134,7 @@ export async function cancelOperation(formData: FormData) {
   revalidatePath(`/operations`);
 }
 
+
+
+// Generate Reference: <Warehouse>/<Operation>/<ID>
+  // Count how many we have for this type and warehouse to increment
