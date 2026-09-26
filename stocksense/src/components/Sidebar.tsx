@@ -7,8 +7,8 @@ import { useState } from "react";
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [opsOpen, setOpsOpen] = useState(true);
-  const [settingsOpen, setSettingsOpen] = useState(true);
+  const [opsOpen, setOpsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 

@@ -28,7 +28,7 @@ export default async function OperationListPage({ params }: { params: { type: st
   });
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-slate-800">{titleMap[opType]}</h1>
         <div className="flex gap-4">

@@ -8,7 +8,7 @@ export default async function SettingsPage() {
   });
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto p-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-slate-800">Settings</h1>
       </div>

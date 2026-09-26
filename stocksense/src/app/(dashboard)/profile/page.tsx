@@ -19,7 +19,7 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto">
+    <div className="space-y-6 max-w-3xl mx-auto p-6">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-slate-800">My Profile</h1>
       </div>

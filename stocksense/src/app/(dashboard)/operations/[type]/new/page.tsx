@@ -17,7 +17,7 @@ export default async function NewOperationPage({ params }: { params: { type: str
   const locations = await prisma.location.findMany({ include: { warehouse: true } });
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto p-6">
       <div className="flex items-center gap-4">
         <Link href={`/operations/${params.type}`} className="p-2 bg-white rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 transition-colors">
           <ArrowLeft size={20} />
