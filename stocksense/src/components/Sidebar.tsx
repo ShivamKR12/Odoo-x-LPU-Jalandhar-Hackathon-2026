@@ -76,11 +76,11 @@ export default function Sidebar() {
           
           {settingsOpen && (
             <div className="pl-11 pr-4 py-1 space-y-1">
-              <Link href="/settings/warehouse" className={subLinkClass(isActive("/settings/warehouse"))}>
+              <Link href="/settings" className={subLinkClass(isActive("/settings"))}>
                 <Building2 size={14} />
                 1. Warehouse
               </Link>
-              <Link href="/settings/locations" className={subLinkClass(isActive("/settings/locations"))}>
+              <Link href="/settings" className={subLinkClass(isActive("/settings"))}>
                 <MapPin size={14} />
                 2. Locations
               </Link>

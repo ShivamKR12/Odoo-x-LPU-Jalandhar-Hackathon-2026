@@ -1,15 +1,20 @@
 import Sidebar from "@/components/Sidebar";
 import TopNavbar from "@/components/TopNavbar";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+  const userName = session?.user?.name || "Administrator";
+
   return (
     <div className="flex flex-col min-h-screen bg-odoo-bg">
       {/* 1. Top Navbar */}
-      <TopNavbar />
+      <TopNavbar userName={userName} />
 
       <div className="flex flex-1 overflow-hidden">
         {/* 2. Left Sidebar */}
