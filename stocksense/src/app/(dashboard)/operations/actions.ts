@@ -134,3 +134,7 @@ export async function cancelOperation(formData: FormData) {
   revalidatePath(`/operations`);
 }
 
+
+
+// Generate Reference: <Warehouse>/<Operation>/<ID>
+  // Count how many we have for this type and warehouse to increment
