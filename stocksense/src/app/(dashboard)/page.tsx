@@ -18,10 +18,45 @@ export default async function Dashboard() {
   const deliveriesOperations = deliveries.filter(d => d.scheduleDate && d.scheduleDate >= now).length;
   const deliveriesToDeliver = deliveries.length;
 
+  // Products & Stock KPIs
+  const products = await prisma.product.findMany({ include: { stockQuants: true } });
+  const totalProducts = products.length;
+  const lowStockItems = products.filter(p => {
+    const totalQty = p.stockQuants.reduce((sum, q) => sum + q.quantity, 0);
+    return totalQty <= p.minStock;
+  }).length;
+
+  // Internal Transfers
+  const internalTransfers = await prisma.move.count({ where: { type: "INTERNAL", status: { not: "DONE" } } });
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-slate-800">Inventory Overview</h1>
+      </div>
+
+      {/* High Level KPIs */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-center items-center text-center">
+          <span className="text-3xl font-bold text-odoo-purple">{totalProducts}</span>
+          <span className="text-xs font-bold text-odoo-muted uppercase mt-1">Total Products</span>
+        </div>
+        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-center items-center text-center">
+          <span className="text-3xl font-bold text-odoo-danger">{lowStockItems}</span>
+          <span className="text-xs font-bold text-odoo-muted uppercase mt-1">Low / Out of Stock</span>
+        </div>
+        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-center items-center text-center">
+          <span className="text-3xl font-bold text-odoo-teal">{receiptsToReceive}</span>
+          <span className="text-xs font-bold text-odoo-muted uppercase mt-1">Pending Receipts</span>
+        </div>
+        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-center items-center text-center">
+          <span className="text-3xl font-bold text-orange-500">{deliveriesToDeliver}</span>
+          <span className="text-xs font-bold text-odoo-muted uppercase mt-1">Pending Deliveries</span>
+        </div>
+        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-center items-center text-center">
+          <span className="text-3xl font-bold text-blue-500">{internalTransfers}</span>
+          <span className="text-xs font-bold text-odoo-muted uppercase mt-1">Pending Transfers</span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
