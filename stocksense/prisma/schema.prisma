@@ -12,11 +12,13 @@ datasource db {
 
 model User {
   id       String  @id @default(uuid())
+  loginId  String  @unique
   email    String  @unique
   password String
   name     String
   otp      String?
-  role     String  @default("STAFF") // "MANAGER" or "STAFF"
+  role     String  @default("STAFF")
+  moves    Move[]  @relation("ResponsibleUser")
 }
 
 model Product {
@@ -25,6 +27,7 @@ model Product {
   sku         String   @unique
   category    String
   unit        String
+  cost        Float    @default(0.0)
   minStock    Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -36,12 +39,15 @@ model Product {
 model Warehouse {
   id        String     @id @default(uuid())
   name      String
+  shortCode String
+  address   String?
   locations Location[]
 }
 
 model Location {
   id          String     @id @default(uuid())
   name        String
+  shortCode   String
   warehouseId String
   warehouse   Warehouse  @relation(fields: [warehouseId], references: [id])
   
@@ -66,6 +72,10 @@ model Move {
   reference        String     @unique
   type             String     // RECEIPT, DELIVERY, INTERNAL, ADJUSTMENT
   status           String     // DRAFT, WAITING, READY, DONE, CANCELED
+  contact          String?
+  scheduleDate     DateTime?
+  responsibleId    String?
+  responsible      User?      @relation("ResponsibleUser", fields: [responsibleId], references: [id])
   sourceLocationId String?
   sourceLocation   Location?  @relation("SourceLocation", fields: [sourceLocationId], references: [id])
   destLocationId   String?

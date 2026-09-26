@@ -4,20 +4,38 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json();
+    const { loginId, email, password } = await req.json();
 
-    if (!name || !email || !password) {
+    if (!loginId || !email || !password) {
       return NextResponse.json({ message: "Missing fields" }, { status: 400 });
     }
 
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) {
-      return NextResponse.json({ message: "User already exists" }, { status: 400 });
+    if (loginId.length < 6 || loginId.length > 12) {
+      return NextResponse.json({ message: "Login ID must be between 6 and 12 characters" }, { status: 400 });
+    }
+
+    if (password.length <= 8) {
+      return NextResponse.json({ message: "Password must be greater than 8 characters" }, { status: 400 });
+    }
+
+    if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return NextResponse.json({ message: "Password must contain uppercase, lowercase, and a special character" }, { status: 400 });
+    }
+
+    const existingLogin = await prisma.user.findUnique({ where: { loginId } });
+    if (existingLogin) {
+      return NextResponse.json({ message: "Login ID already exists" }, { status: 400 });
+    }
+
+    const existingEmail = await prisma.user.findUnique({ where: { email } });
+    if (existingEmail) {
+      return NextResponse.json({ message: "Email already exists" }, { status: 400 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword },
+      // We don't have a specific name field in the exact spec UI, so we default it or use loginId
+      data: { name: loginId, loginId, email, password: hashedPassword },
     });
 
     return NextResponse.json({ message: "User created", user }, { status: 201 });

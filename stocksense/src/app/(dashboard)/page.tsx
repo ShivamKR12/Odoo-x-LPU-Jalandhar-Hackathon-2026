@@ -1,77 +1,91 @@
 import prisma from "@/lib/prisma";
-import { PackageSearch, TrendingDown, ArrowDownToLine, ArrowUpFromLine, ArrowRightLeft } from "lucide-react";
+import Link from "next/link";
+import { ArrowDownToLine, ArrowUpFromLine, Settings } from "lucide-react";
 
 export default async function Dashboard() {
-  // Fetch real data KPIs using Prisma
-  const totalProducts = await prisma.product.count();
-  
-  // Products where any associated stock quant is <= minStock (simplified for now)
-  const lowStockItems = await prisma.product.count({
-    where: {
-      stockQuants: {
-        some: { quantity: { lte: 10 } } // Mock threshold for low stock
-      }
-    }
-  });
+  const now = new Date();
 
-  const pendingReceipts = await prisma.move.count({
-    where: { type: "RECEIPT", status: { in: ["DRAFT", "WAITING", "READY"] } }
-  });
+  // Receipts
+  const receipts = await prisma.move.findMany({ where: { type: "RECEIPT", status: { not: "DONE" } } });
+  const receiptsLate = receipts.filter(r => r.scheduleDate && r.scheduleDate < now).length;
+  const receiptsOperations = receipts.filter(r => r.scheduleDate && r.scheduleDate >= now).length;
+  const receiptsToReceive = receipts.length;
 
-  const pendingDeliveries = await prisma.move.count({
-    where: { type: "DELIVERY", status: { in: ["DRAFT", "WAITING", "READY"] } }
-  });
-
-  const pendingTransfers = await prisma.move.count({
-    where: { type: "INTERNAL", status: { in: ["DRAFT", "WAITING", "READY"] } }
-  });
-
-  const kpis = [
-    { title: "Total Products", value: totalProducts, icon: PackageSearch, color: "text-blue-500", bg: "bg-blue-100" },
-    { title: "Low/Out of Stock", value: lowStockItems, icon: TrendingDown, color: "text-red-500", bg: "bg-red-100" },
-    { title: "Pending Receipts", value: pendingReceipts, icon: ArrowDownToLine, color: "text-green-500", bg: "bg-green-100" },
-    { title: "Pending Deliveries", value: pendingDeliveries, icon: ArrowUpFromLine, color: "text-orange-500", bg: "bg-orange-100" },
-    { title: "Scheduled Transfers", value: pendingTransfers, icon: ArrowRightLeft, color: "text-purple-500", bg: "bg-purple-100" },
-  ];
+  // Deliveries
+  const deliveries = await prisma.move.findMany({ where: { type: "DELIVERY", status: { not: "DONE" } } });
+  const deliveriesLate = deliveries.filter(d => d.scheduleDate && d.scheduleDate < now).length;
+  const deliveriesWaiting = deliveries.filter(d => d.status === "WAITING").length;
+  const deliveriesOperations = deliveries.filter(d => d.scheduleDate && d.scheduleDate >= now).length;
+  const deliveriesToDeliver = deliveries.length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-slate-800">Inventory Dashboard</h1>
-        <div className="flex gap-2">
-          {/* Filters Placeholder */}
-          <select className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
-            <option>All Warehouses</option>
-          </select>
-          <select className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
-            <option>All Statuses</option>
-          </select>
-        </div>
+    <div className="space-y-6 max-w-6xl mx-auto">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-slate-800">Inventory Overview</h1>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {kpis.map((kpi, idx) => {
-          const Icon = kpi.icon;
-          return (
-            <div key={idx} className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-4">
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${kpi.bg}`}>
-                <Icon className={kpi.color} size={24} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        {/* Receipts Kanban Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <Link href="/operations/receipts" className="text-lg font-bold text-slate-800 hover:text-orange-500 transition-colors">Receipts</Link>
+            <Settings size={18} className="text-slate-400 cursor-pointer" />
+          </div>
+          <div className="p-6 flex items-start gap-8">
+            <div className="flex-1">
+              <Link href="/operations/receipts">
+                <div className="bg-orange-500 text-white rounded-lg p-4 text-center hover:bg-orange-600 transition-colors cursor-pointer mb-6">
+                  <span className="block text-3xl font-bold">{receiptsToReceive}</span>
+                  <span className="block text-sm font-medium opacity-90 uppercase tracking-wide">To Receive</span>
+                </div>
+              </Link>
+            </div>
+            <div className="flex-1 space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-500">{receiptsOperations} operations</span>
+                <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">{receiptsOperations}</span>
               </div>
-              <div>
-                <p className="text-sm text-slate-500 font-medium">{kpi.title}</p>
-                <p className="text-2xl font-bold text-slate-800">{kpi.value}</p>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-red-500 font-medium">{receiptsLate} Late</span>
+                <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded font-medium">{receiptsLate}</span>
               </div>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Snapshot / Recent Activity can go here */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h2 className="text-lg font-bold text-slate-800 mb-4">Recent Operations</h2>
-        <div className="text-center text-slate-500 py-8">
-          No recent activity found.
+          </div>
         </div>
+
+        {/* Deliveries Kanban Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <Link href="/operations/deliveries" className="text-lg font-bold text-slate-800 hover:text-orange-500 transition-colors">Delivery Orders</Link>
+            <Settings size={18} className="text-slate-400 cursor-pointer" />
+          </div>
+          <div className="p-6 flex items-start gap-8">
+            <div className="flex-1">
+              <Link href="/operations/deliveries">
+                <div className="bg-orange-500 text-white rounded-lg p-4 text-center hover:bg-orange-600 transition-colors cursor-pointer mb-6">
+                  <span className="block text-3xl font-bold">{deliveriesToDeliver}</span>
+                  <span className="block text-sm font-medium opacity-90 uppercase tracking-wide">To Deliver</span>
+                </div>
+              </Link>
+            </div>
+            <div className="flex-1 space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-500">{deliveriesOperations} operations</span>
+                <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">{deliveriesOperations}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-yellow-600 font-medium">{deliveriesWaiting} waiting</span>
+                <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded font-medium">{deliveriesWaiting}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-red-500 font-medium">{deliveriesLate} Late</span>
+                <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded font-medium">{deliveriesLate}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
