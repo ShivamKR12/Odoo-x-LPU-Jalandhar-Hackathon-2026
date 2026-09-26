@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String
+  name     String
+  otp      String?
+  role     String  @default("STAFF") // "MANAGER" or "STAFF"
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  sku         String   @unique
+  category    String
+  unit        String
+  minStock    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  stockQuants StockQuant[]
+  moveLines   MoveLine[]
+}
+
+model Warehouse {
+  id        String     @id @default(uuid())
+  name      String
+  locations Location[]
+}
+
+model Location {
+  id          String     @id @default(uuid())
+  name        String
+  warehouseId String
+  warehouse   Warehouse  @relation(fields: [warehouseId], references: [id])
+  
+  stockQuants StockQuant[]
+  movesSource Move[]     @relation("SourceLocation")
+  movesDest   Move[]     @relation("DestLocation")
+}
+
+model StockQuant {
+  id         String   @id @default(uuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+  quantity   Int      @default(0)
+
+  @@unique([productId, locationId])
+}
+
+model Move {
+  id               String     @id @default(uuid())
+  reference        String     @unique
+  type             String     // RECEIPT, DELIVERY, INTERNAL, ADJUSTMENT
+  status           String     // DRAFT, WAITING, READY, DONE, CANCELED
+  sourceLocationId String?
+  sourceLocation   Location?  @relation("SourceLocation", fields: [sourceLocationId], references: [id])
+  destLocationId   String?
+  destLocation     Location?  @relation("DestLocation", fields: [destLocationId], references: [id])
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  
+  lines            MoveLine[]
+}
+
+model MoveLine {
+  id          String  @id @default(uuid())
+  moveId      String
+  move        Move    @relation(fields: [moveId], references: [id])
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+  quantity    Int
+}
