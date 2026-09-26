@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ArrowRightLeft, Package, History, Settings, ChevronDown, ChevronRight, FileDown, FileUp, FileWarning, MapPin, Building2 } from "lucide-react";
+import { LayoutDashboard, ArrowRightLeft, Package, History, Settings, ChevronDown, ChevronRight, FileDown, FileUp, FileWarning } from "lucide-react";
 import { useState } from "react";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [opsOpen, setOpsOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
@@ -64,29 +63,10 @@ export default function Sidebar() {
           <span>Move History</span>
         </Link>
 
-        {/* Settings */}
-        <div>
-          <button onClick={() => setSettingsOpen(!settingsOpen)} className={`w-full flex items-center justify-between px-4 py-2 text-[13px] transition-colors ${isActive("/settings") ? "font-bold bg-gray-100 text-odoo-text" : "text-odoo-text hover:bg-gray-50"}`}>
-            <div className="flex items-center gap-3">
-              <Settings size={16} className="text-odoo-muted" />
-              <span>Settings</span>
-            </div>
-            {settingsOpen ? <ChevronDown size={14} className="text-odoo-muted" /> : <ChevronRight size={14} className="text-odoo-muted" />}
-          </button>
-          
-          {settingsOpen && (
-            <div className="pl-11 pr-4 py-1 space-y-1">
-              <Link href="/settings" className={subLinkClass(isActive("/settings"))}>
-                <Building2 size={14} />
-                1. Warehouse
-              </Link>
-              <Link href="/settings" className={subLinkClass(isActive("/settings"))}>
-                <MapPin size={14} />
-                2. Locations
-              </Link>
-            </div>
-          )}
-        </div>
+        <Link href="/settings" className={linkClass(isActive("/settings"))}>
+          <Settings size={16} className="text-odoo-muted" />
+          <span>Settings</span>
+        </Link>
       </nav>
     </aside>
   );
