@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 export default async function OperationListPage({ params }: { params: { type: string } }) {
   const opType = params.type.toUpperCase();
   
-  if (!["RECEIPTS", "DELIVERIES", "ADJUSTMENTS"].includes(opType)) {
+  if (!["RECEIPTS", "DELIVERIES", "ADJUSTMENTS", "INTERNAL"].includes(opType)) {
     notFound();
   }
 
@@ -14,12 +14,14 @@ export default async function OperationListPage({ params }: { params: { type: st
     "RECEIPTS": "RECEIPT",
     "DELIVERIES": "DELIVERY",
     "ADJUSTMENTS": "ADJUSTMENT",
+    "INTERNAL": "INTERNAL",
   };
 
   const titleMap: Record<string, string> = {
     "RECEIPTS": "Receipts (Incoming)",
     "DELIVERIES": "Delivery Orders",
     "ADJUSTMENTS": "Stock Adjustments",
+    "INTERNAL": "Internal Transfers",
   };
 
   const moves = await prisma.move.findMany({

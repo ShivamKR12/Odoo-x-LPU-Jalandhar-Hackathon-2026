@@ -49,6 +49,10 @@ export default function Sidebar() {
                 <FileWarning size={14} />
                 3. Adjustment
               </Link>
+              <Link href="/operations/internal" className={subLinkClass(isActive("/operations/internal"))}>
+                <ArrowRightLeft size={14} />
+                4. Internal Transfer
+              </Link>
             </div>
           )}
         </div>
