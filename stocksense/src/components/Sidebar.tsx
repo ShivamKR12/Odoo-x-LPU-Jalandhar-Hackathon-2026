@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, ArrowRightLeft, History, Settings, User } from "lucide-react";
+import { signOut } from "next-auth/react";
+import { LayoutDashboard, Package, ArrowRightLeft, History, Settings, User, LogOut } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -49,7 +50,8 @@ export default function Sidebar() {
           <User size={20} />
           <span className="font-medium">My Profile</span>
         </Link>
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800/50 transition-colors text-left text-red-400">
+        <button onClick={() => signOut({ callbackUrl: '/login' })} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800/50 transition-colors text-left text-red-400">
+          <LogOut size={20} />
           <span className="font-medium">Logout</span>
         </button>
       </div>
