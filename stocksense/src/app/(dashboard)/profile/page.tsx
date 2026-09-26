@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { UserCircle, Mail, Briefcase, ShieldCheck } from "lucide-react";
 import prisma from "@/lib/prisma";
 
