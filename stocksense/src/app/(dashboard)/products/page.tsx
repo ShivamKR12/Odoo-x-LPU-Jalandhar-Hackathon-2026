@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { createProduct } from "./actions";
 import { Plus } from "lucide-react";
 
-export default async function ProductsPage() {
+export default async function ProductsPage({ searchParams }: { searchParams: { error?: string } }) {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
     include: {
@@ -15,6 +15,12 @@ export default async function ProductsPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-slate-800">Products</h1>
       </div>
+      
+      {searchParams.error === "SKU_EXISTS" && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm font-medium">
+          A product with this SKU already exists! Please use a unique code.
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">

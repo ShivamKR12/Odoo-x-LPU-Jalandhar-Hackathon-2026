@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function createProduct(formData: FormData) {
   const name = formData.get("name") as string;
@@ -14,16 +15,24 @@ export async function createProduct(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  await prisma.product.create({
-    data: {
-      name,
-      sku,
-      category,
-      unit,
-      minStock: isNaN(minStock) ? 0 : minStock,
-    },
-  });
+  try {
+    await prisma.product.create({
+      data: {
+        name,
+        sku,
+        category,
+        unit,
+        minStock: isNaN(minStock) ? 0 : minStock,
+      },
+    });
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      redirect("/products?error=SKU_EXISTS");
+    }
+    throw error;
+  }
 
   revalidatePath("/products");
   revalidatePath("/");
+  redirect("/products");
 }
