@@ -2,32 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@layer base {
+  body {
+    @apply text-[13px] text-odoo-text bg-odoo-bg antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
+@layer components {
+  /* Odoo Input Styles */
+  .o_input {
+    @apply w-full border-0 border-b border-gray-300 bg-transparent px-1 py-1.5 transition-colors focus:border-odoo-purple focus:ring-0 outline-none;
+  }
+  
+  .o_label {
+    @apply block font-bold text-odoo-muted text-right pr-4 text-[13px];
+  }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .o_form_sheet {
+    @apply max-w-[1140px] mx-auto bg-white border border-gray-300 p-6 shadow-sm;
+  }
+
+  /* Odoo Chevron Statusbar */
+  .o_statusbar_status {
+    @apply flex items-center bg-transparent relative;
+  }
+
+  .o_arrow_button {
+    @apply relative flex items-center px-6 py-2 text-[12px] font-bold uppercase tracking-wider text-odoo-muted transition-colors;
+  }
+
+  .o_arrow_button.active {
+    @apply text-odoo-text bg-blue-50;
+  }
+
+  /* The Arrow borders */
+  .o_arrow_button::after, .o_arrow_button::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 0;
+    height: 0;
+    border: solid transparent;
+  }
+
+  /* Right Arrow */
+  .o_arrow_button::after {
+    left: 100%;
+    border-width: 17px 0 17px 11px;
+    border-left-color: transparent;
+    z-index: 2;
+  }
+
+  .o_arrow_button.active::after {
+    border-left-color: #EFF6FF; /* match bg-blue-50 */
+  }
+
+  /* Arrow Border (Before) */
+  .o_arrow_button::before {
+    left: 100%;
+    border-width: 18px 0 18px 12px;
+    border-left-color: #e5e7eb; /* tailwind gray-200 */
+    z-index: 1;
+    margin-top: -1px;
+  }
+
+  /* Hide left border arrow on first child */
+  .o_arrow_button:first-child {
+    @apply pl-4;
+  }
+
+  /* Kanban card */
+  .o_kanban_record {
+    @apply bg-white border border-gray-300 rounded-[3px] p-3 mb-2 shadow-sm;
   }
 }

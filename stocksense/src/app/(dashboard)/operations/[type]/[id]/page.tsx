@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowLeft, Printer, Check, X, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
 import { validateOperation, cancelOperation, addMoveLine } from "../../actions";
 
@@ -22,138 +21,143 @@ export default async function OperationDetailPage({ params }: { params: { type: 
   const statuses = isDelivery ? ["DRAFT", "WAITING", "READY", "DONE"] : ["DRAFT", "READY", "DONE"];
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Header UI */}
-      <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-        <div className="flex items-center gap-4">
-          <Link href={`/operations/${params.type}`} className="p-2 bg-slate-50 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 transition-colors">
-            <ArrowLeft size={20} />
-          </Link>
-          <h1 className="text-2xl font-bold text-slate-800">{move.reference}</h1>
+    <div className="flex flex-col h-full bg-odoo-bg">
+      {/* Control Panel */}
+      <div className="bg-white border-b border-gray-300 px-4 py-2 flex flex-col gap-2 shrink-0">
+        <div className="flex justify-between items-center text-[13px]">
+          <div className="flex items-center text-odoo-muted gap-2">
+            <Link href={`/operations/${params.type}`} className="hover:text-odoo-text hover:underline">Operations</Link>
+            <span>/</span>
+            <Link href={`/operations/${params.type}`} className="hover:text-odoo-text hover:underline capitalize">{params.type.toLowerCase()}</Link>
+            <span>/</span>
+            <span className="text-odoo-text font-bold">{move.reference}</span>
+          </div>
+          <div className="relative">
+            <input type="text" placeholder="Search..." className="border border-gray-300 rounded px-2 py-1 text-sm focus:border-odoo-purple focus:outline-none w-64" />
+          </div>
         </div>
-        <div className="flex gap-3">
-          <Link href={`/operations/${params.type}/new`} className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50">New</Link>
-          {move.status !== "DONE" && move.status !== "CANCELED" && (
-            <form action={validateOperation}>
-              <input type="hidden" name="moveId" value={move.id} />
-              <button type="submit" className="px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 flex items-center gap-2">
-                <Check size={18} /> Validate
-              </button>
-            </form>
-          )}
-          {move.status !== "DONE" && move.status !== "CANCELED" && (
-            <form action={cancelOperation}>
-              <input type="hidden" name="moveId" value={move.id} />
-              <button type="submit" className="px-4 py-2 border border-red-200 text-red-600 rounded-lg font-medium hover:bg-red-50 flex items-center gap-2">
-                <X size={18} /> Cancel
-              </button>
-            </form>
-          )}
-          <button disabled={move.status !== "DONE"} className={`px-4 py-2 border rounded-lg font-medium flex items-center gap-2 ${move.status === "DONE" ? "border-slate-300 text-slate-700 hover:bg-slate-50" : "border-slate-100 text-slate-300 cursor-not-allowed"}`}>
-            <Printer size={18} /> Print
-          </button>
+        
+        <div className="flex justify-between items-center mt-2">
+          <div className="flex gap-2">
+            <Link href={`/operations/${params.type}/new`} className="px-3 py-1.5 bg-white border border-gray-300 text-odoo-text font-medium text-[13px] hover:bg-gray-50 rounded-sm">New</Link>
+            <button className="px-3 py-1.5 bg-white border border-gray-300 text-odoo-text font-medium text-[13px] hover:bg-gray-50 rounded-sm cursor-not-allowed opacity-50">Save</button>
+            <button className="px-3 py-1.5 bg-white border border-gray-300 text-odoo-text font-medium text-[13px] hover:bg-gray-50 rounded-sm cursor-not-allowed opacity-50">Discard</button>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        {/* Status Bar */}
-        <div className="bg-slate-50 border-b border-slate-200 p-4 flex justify-end">
-          <div className="flex items-center">
-            {statuses.map((status, index) => {
-              const isActive = move.status === status;
-              const isPast = statuses.indexOf(move.status) > index;
-              return (
-                <div key={status} className="flex items-center">
-                  <div className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide ${isActive ? 'bg-orange-500 text-white shadow-md' : isPast ? 'text-orange-500' : 'text-slate-400'}`}>
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto p-4 o_content">
+        <div className="o_form_sheet">
+          
+          {/* Statusbar */}
+          <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-6 -mx-6 px-6 -mt-6 pt-4 bg-white sticky top-0 z-10">
+            <div className="flex gap-2">
+              {move.status !== "DONE" && move.status !== "CANCELED" && (
+                <form action={validateOperation}>
+                  <input type="hidden" name="moveId" value={move.id} />
+                  <button type="submit" className="bg-odoo-teal text-white px-3 py-1.5 font-bold text-[13px] uppercase rounded-sm hover:bg-teal-700 transition-colors">
+                    Validate
+                  </button>
+                </form>
+              )}
+              {move.status !== "DONE" && move.status !== "CANCELED" && (
+                <form action={cancelOperation}>
+                  <input type="hidden" name="moveId" value={move.id} />
+                  <button type="submit" className="bg-white border border-gray-300 text-odoo-text px-3 py-1.5 font-bold text-[13px] uppercase rounded-sm hover:bg-gray-50 transition-colors">
+                    Cancel
+                  </button>
+                </form>
+              )}
+              <button disabled={move.status !== "DONE"} className={`bg-white border border-gray-300 px-3 py-1.5 font-bold text-[13px] uppercase rounded-sm transition-colors ${move.status === "DONE" ? "text-odoo-text hover:bg-gray-50" : "text-gray-300 cursor-not-allowed"}`}>
+                Print
+              </button>
+            </div>
+            
+            <div className="o_statusbar_status flex">
+              {statuses.map((status, index) => {
+                const isActive = move.status === status;
+                return (
+                  <div key={status} className={`o_arrow_button ${isActive ? "active" : ""}`}>
                     {status}
                   </div>
-                  {index < statuses.length - 1 && <div className={`w-8 h-[2px] mx-2 ${isPast ? 'bg-orange-500' : 'bg-slate-300'}`} />}
+                );
+              })}
+            </div>
+          </div>
+
+          <h1 className="text-3xl font-bold text-odoo-text mb-8">{move.reference}</h1>
+
+          <div className="grid grid-cols-2 gap-x-12 gap-y-4 mb-8">
+            <div className="flex items-center">
+              <label className="w-1/3 o_label">{isDelivery ? "Delivery Address" : "Receive From"}</label>
+              <div className="w-2/3 border-b border-gray-300 py-1">{move.contact || "None"}</div>
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 o_label">Schedule Date</label>
+              <div className="w-2/3 border-b border-gray-300 py-1">{move.scheduleDate ? new Date(move.scheduleDate).toLocaleDateString() : "-"}</div>
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 o_label">Operation Type</label>
+              <div className="w-2/3 border-b border-gray-300 py-1 font-bold">{move.type}</div>
+            </div>
+            <div className="flex items-center">
+              <label className="w-1/3 o_label">Responsible</label>
+              <div className="w-2/3 border-b border-gray-300 py-1 flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-[10px] font-bold">
+                  {move.responsible?.name?.[0]?.toUpperCase() || "?"}
                 </div>
-              );
-            })}
+                {move.responsible?.name || "-"}
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="p-6 grid grid-cols-2 gap-8 border-b border-slate-100">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
-                {isDelivery ? "Delivery Address" : "Receive From"}
-              </label>
-              <div className="font-medium text-slate-800 text-lg">{move.contact || "Not specified"}</div>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Operation Type</label>
-              <div className="font-medium text-slate-800">{move.type}</div>
-            </div>
+          {/* Notebook / Tabs */}
+          <div className="border-b border-gray-200 mb-4">
+            <button className="px-4 py-2 border-b-2 border-odoo-purple text-odoo-purple font-bold text-[13px]">Operations</button>
           </div>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Schedule Date</label>
-              <div className="font-medium text-slate-800">{move.scheduleDate ? new Date(move.scheduleDate).toLocaleDateString() : "-"}</div>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Responsible</label>
-              <div className="font-medium text-slate-800">{move.responsible?.name || "-"}</div>
-            </div>
-          </div>
-        </div>
 
-        {/* Products Tab */}
-        <div className="p-6">
-          <h2 className="text-lg font-bold text-slate-800 mb-4">Products</h2>
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-slate-200">
-                <th className="py-3 font-medium text-slate-500">Product</th>
-                <th className="py-3 font-medium text-slate-500 text-right">Quantity</th>
+              <tr>
+                <th className="py-2 border-b-2 border-gray-300 text-odoo-muted font-bold uppercase text-[12px]">Product</th>
+                <th className="py-2 border-b-2 border-gray-300 text-odoo-muted font-bold uppercase text-[12px] text-right">Quantity</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-gray-200">
               {move.lines.map((line) => {
-                // Check stock alert logic for deliveries
-                let rowClass = "text-slate-800";
+                let isError = false;
                 if (isDelivery) {
                   const locationStock = line.product.stockQuants.find(q => q.locationId === move.sourceLocationId)?.quantity || 0;
-                  if (locationStock < line.quantity) {
-                    rowClass = "text-red-600 bg-red-50/50"; // Red row if outgoing product not in stock
-                  }
+                  if (locationStock < line.quantity) isError = true;
                 }
 
                 return (
-                  <tr key={line.id} className={rowClass}>
-                    <td className="py-3 font-medium">[{line.product.sku}] {line.product.name}</td>
-                    <td className="py-3 font-medium text-right">{line.quantity} {line.product.unit}</td>
+                  <tr key={line.id} className={`hover:bg-gray-50 cursor-pointer ${isError ? "text-odoo-danger" : "text-odoo-text"}`}>
+                    <td className="py-2 font-medium">[{line.product.sku}] {line.product.name}</td>
+                    <td className="py-2 font-bold text-right">{line.quantity} {line.product.unit}</td>
                   </tr>
                 );
               })}
-              {move.lines.length === 0 && (
-                <tr><td colSpan={2} className="py-4 text-center text-slate-500 italic">No products added.</td></tr>
+              
+              {move.status !== "DONE" && move.status !== "CANCELED" && (
+                <tr>
+                  <td colSpan={2} className="py-2">
+                    <form action={addMoveLine} className="flex gap-4 items-center">
+                      <input type="hidden" name="moveId" value={move.id} />
+                      <select name="productId" required className="o_input max-w-xs bg-white">
+                        <option value="">Add a line...</option>
+                        {products.map(p => <option key={p.id} value={p.id}>[{p.sku}] {p.name}</option>)}
+                      </select>
+                      <input type="number" name="quantity" min="1" defaultValue="1" required className="o_input w-24 text-right bg-white" placeholder="Qty" />
+                      <button type="submit" className="text-odoo-teal font-bold hover:underline">Add</button>
+                    </form>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
 
-          {move.status !== "DONE" && move.status !== "CANCELED" && (
-            <div className="mt-6 border-t border-slate-100 pt-6">
-              <form action={addMoveLine} className="flex gap-4 items-end">
-                <input type="hidden" name="moveId" value={move.id} />
-                <div className="flex-1">
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Add Product</label>
-                  <select name="productId" required className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:outline-none bg-white">
-                    <option value="">Select...</option>
-                    {products.map(p => <option key={p.id} value={p.id}>[{p.sku}] {p.name}</option>)}
-                  </select>
-                </div>
-                <div className="w-32">
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Qty</label>
-                  <input type="number" name="quantity" min="1" defaultValue="1" required className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" />
-                </div>
-                <button type="submit" className="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-700 h-10 flex items-center gap-2">
-                  <Plus size={16} /> Add Line
-                </button>
-              </form>
-            </div>
-          )}
         </div>
       </div>
     </div>

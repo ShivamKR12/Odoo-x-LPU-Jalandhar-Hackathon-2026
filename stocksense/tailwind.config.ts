@@ -8,6 +8,18 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        odoo: {
+          purple: "#71639E",
+          teal: "#017E84",
+          bg: "#F9F9F9",
+          surface: "#FFFFFF",
+          text: "#374151",
+          muted: "#6B7280",
+          danger: "#DC3545",
+          success: "#28A745"
+        }
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

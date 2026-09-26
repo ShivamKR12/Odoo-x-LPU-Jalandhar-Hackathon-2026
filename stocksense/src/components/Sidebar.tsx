@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
-import { LayoutDashboard, Package, ArrowRightLeft, History, Settings, User, LogOut, ChevronDown, ChevronRight, FileDown, FileUp, FileWarning, MapPin, Building2 } from "lucide-react";
+import { LayoutDashboard, ArrowRightLeft, Package, History, Settings, ChevronDown, ChevronRight, FileDown, FileUp, FileWarning, MapPin, Building2 } from "lucide-react";
 import { useState } from "react";
 
 export default function Sidebar() {
@@ -13,91 +12,82 @@ export default function Sidebar() {
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
+  const linkClass = (active: boolean) => 
+    `flex items-center gap-3 px-4 py-2 text-[13px] transition-colors ${active ? "bg-gray-100 font-bold text-odoo-text" : "text-odoo-text hover:bg-gray-50"}`;
+
+  const subLinkClass = (active: boolean) => 
+    `flex items-center gap-3 py-1.5 text-[13px] transition-colors ${active ? "font-bold text-odoo-text" : "text-odoo-muted hover:text-odoo-text"}`;
+
   return (
-    <aside className="w-64 bg-slate-900 text-white min-h-screen flex flex-col">
-      <div className="p-6">
-        <h1 className="text-2xl font-bold text-orange-500">StockSense</h1>
-      </div>
-      
-      <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
-        <Link href="/" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${isActive("/") && pathname === "/" ? "bg-slate-800 text-orange-400" : "hover:bg-slate-800/50"}`}>
-          <LayoutDashboard size={20} />
-          <span className="font-medium">Dashboard</span>
+    <aside className="w-[240px] bg-white border-r border-gray-200 min-h-full flex flex-col shrink-0 overflow-y-auto">
+      <nav className="flex-1 py-4 space-y-1">
+        <Link href="/" className={linkClass(isActive("/") && pathname === "/")}>
+          <LayoutDashboard size={16} className="text-odoo-muted" />
+          <span>Dashboard</span>
         </Link>
 
         {/* Operations */}
         <div>
-          <button onClick={() => setOpsOpen(!opsOpen)} className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors ${isActive("/operations") ? "text-orange-400" : "hover:bg-slate-800/50"}`}>
+          <button onClick={() => setOpsOpen(!opsOpen)} className={`w-full flex items-center justify-between px-4 py-2 text-[13px] transition-colors ${isActive("/operations") ? "font-bold bg-gray-100 text-odoo-text" : "text-odoo-text hover:bg-gray-50"}`}>
             <div className="flex items-center gap-3">
-              <ArrowRightLeft size={20} />
-              <span className="font-medium">Operations</span>
+              <ArrowRightLeft size={16} className="text-odoo-muted" />
+              <span>Operations</span>
             </div>
-            {opsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {opsOpen ? <ChevronDown size={14} className="text-odoo-muted" /> : <ChevronRight size={14} className="text-odoo-muted" />}
           </button>
           
           {opsOpen && (
             <div className="pl-11 pr-4 py-1 space-y-1">
-              <Link href="/operations/receipts" className={`flex items-center gap-3 py-2 text-sm transition-colors ${isActive("/operations/receipts") ? "text-orange-400 font-medium" : "text-slate-400 hover:text-slate-200"}`}>
-                <FileDown size={16} />
+              <Link href="/operations/receipts" className={subLinkClass(isActive("/operations/receipts"))}>
+                <FileDown size={14} />
                 1. Receipt
               </Link>
-              <Link href="/operations/deliveries" className={`flex items-center gap-3 py-2 text-sm transition-colors ${isActive("/operations/deliveries") ? "text-orange-400 font-medium" : "text-slate-400 hover:text-slate-200"}`}>
-                <FileUp size={16} />
+              <Link href="/operations/deliveries" className={subLinkClass(isActive("/operations/deliveries"))}>
+                <FileUp size={14} />
                 2. Delivery
               </Link>
-              <Link href="/operations/adjustments" className={`flex items-center gap-3 py-2 text-sm transition-colors ${isActive("/operations/adjustments") ? "text-orange-400 font-medium" : "text-slate-400 hover:text-slate-200"}`}>
-                <FileWarning size={16} />
+              <Link href="/operations/adjustments" className={subLinkClass(isActive("/operations/adjustments"))}>
+                <FileWarning size={14} />
                 3. Adjustment
               </Link>
             </div>
           )}
         </div>
 
-        <Link href="/stock" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${isActive("/stock") ? "bg-slate-800 text-orange-400" : "hover:bg-slate-800/50"}`}>
-          <Package size={20} />
-          <span className="font-medium">Stock</span>
+        <Link href="/stock" className={linkClass(isActive("/stock"))}>
+          <Package size={16} className="text-odoo-muted" />
+          <span>Stock</span>
         </Link>
 
-        <Link href="/history" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${isActive("/history") ? "bg-slate-800 text-orange-400" : "hover:bg-slate-800/50"}`}>
-          <History size={20} />
-          <span className="font-medium">Move History</span>
+        <Link href="/history" className={linkClass(isActive("/history"))}>
+          <History size={16} className="text-odoo-muted" />
+          <span>Move History</span>
         </Link>
 
         {/* Settings */}
         <div>
-          <button onClick={() => setSettingsOpen(!settingsOpen)} className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors ${isActive("/settings") ? "text-orange-400" : "hover:bg-slate-800/50"}`}>
+          <button onClick={() => setSettingsOpen(!settingsOpen)} className={`w-full flex items-center justify-between px-4 py-2 text-[13px] transition-colors ${isActive("/settings") ? "font-bold bg-gray-100 text-odoo-text" : "text-odoo-text hover:bg-gray-50"}`}>
             <div className="flex items-center gap-3">
-              <Settings size={20} />
-              <span className="font-medium">Settings</span>
+              <Settings size={16} className="text-odoo-muted" />
+              <span>Settings</span>
             </div>
-            {settingsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {settingsOpen ? <ChevronDown size={14} className="text-odoo-muted" /> : <ChevronRight size={14} className="text-odoo-muted" />}
           </button>
           
           {settingsOpen && (
             <div className="pl-11 pr-4 py-1 space-y-1">
-              <Link href="/settings/warehouse" className={`flex items-center gap-3 py-2 text-sm transition-colors ${isActive("/settings/warehouse") ? "text-orange-400 font-medium" : "text-slate-400 hover:text-slate-200"}`}>
-                <Building2 size={16} />
+              <Link href="/settings/warehouse" className={subLinkClass(isActive("/settings/warehouse"))}>
+                <Building2 size={14} />
                 1. Warehouse
               </Link>
-              <Link href="/settings/locations" className={`flex items-center gap-3 py-2 text-sm transition-colors ${isActive("/settings/locations") ? "text-orange-400 font-medium" : "text-slate-400 hover:text-slate-200"}`}>
-                <MapPin size={16} />
+              <Link href="/settings/locations" className={subLinkClass(isActive("/settings/locations"))}>
+                <MapPin size={14} />
                 2. Locations
               </Link>
             </div>
           )}
         </div>
       </nav>
-
-      <div className="p-4 border-t border-slate-800 space-y-1">
-        <Link href="/profile" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${isActive("/profile") ? "bg-slate-800 text-orange-400" : "hover:bg-slate-800/50"}`}>
-          <User size={20} />
-          <span className="font-medium">My Profile</span>
-        </Link>
-        <button onClick={() => signOut({ callbackUrl: '/login' })} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors text-left text-red-400">
-          <LogOut size={20} />
-          <span className="font-medium">Logout</span>
-        </button>
-      </div>
     </aside>
   );
 }
