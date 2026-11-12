@@ -58,6 +58,7 @@
 ```text
 Odoo-x-LPU-Jalandhar-Hackathon-2026/
 ├── README.md                      # Root project documentation (this file)
+├── COMMANDS.md                    # Complete CLI & command reference guide
 └── stocksense/                    # Main application source directory
     ├── prisma/                    # Prisma schema and SQLite database
     │   ├── dev.db                 # Development database
@@ -124,13 +125,45 @@ Odoo-x-LPU-Jalandhar-Hackathon-2026/
    npx prisma db push
    ```
 
-6. **Start the Development Server**:
+6. **Seed Initial Inventory Data (Optional)**:
+   ```bash
+   node prisma/seed.js
+   ```
+
+7. **Start the Development Server**:
    ```bash
    npm run dev
    ```
 
-7. **Open Application**:
+8. **Open Application**:
    Visit [http://localhost:3000](http://localhost:3000) in your browser. Create an account via **Sign Up** or log in to begin managing inventory.
+
+---
+
+## 💻 CLI & Command Reference
+
+An exhaustive guide containing **all commands and variations** (across ports, network hosts, migrations, SQLite operations, type checks, health checks, troubleshooting, and production builds) is documented in:
+
+👉 **[COMMANDS.md](COMMANDS.md)**
+
+### Essential Commands Summary
+
+| Action | Command (inside `stocksense/`) |
+|---|---|
+| **Install Dependencies** | `npm install` |
+| **Start Dev Server** | `npm run dev` |
+| **Start on Custom Port** | `npm run dev -- -p 3001` |
+| **Start on Local Network (LAN)** | `npm run dev -- -H 0.0.0.0` |
+| **Open Database GUI (Prisma Studio)** | `npx prisma studio` |
+| **Sync Database Schema** | `npx prisma db push` |
+| **Run Database Seed** | `node prisma/seed.js` |
+| **Run TypeScript Check** | `npx tsc --noEmit` |
+| **Lint Code** | `npm run lint` |
+| **Build for Production** | `npm run build` |
+| **Start Production Server** | `npm run start` |
+| **Reset Database & Re-seed** | `Remove-Item prisma/dev.db; npx prisma db push; node prisma/seed.js` |
+
+*For deep dive instructions, direct SQLite queries, background process management, and port troubleshooting, see [COMMANDS.md](COMMANDS.md).*
 
 ---
 
